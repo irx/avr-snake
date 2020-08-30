@@ -1,0 +1,22 @@
+
+                  /~\
+                 (o o)  <---- vaguely resembles snake, doesn't it?
+        _________/ /
+       / _________/
+    ___\____ \
+   /_________/    N   A   K   E
+
+
+This is a AVR GNU Assembly implementation of snake game for `atmega328p'
+
+For required hardware and its config see `schem.pdf'
+Other than that avr-gcc is needed for building the code and avrdude for flashing.
+
+Run:
+```
+% make flash
+```
+et voilà!
+
+Beware! This code still contains loads of borked cruft that is a result of
+not-so-sophisticated debugging and general experimantation.
