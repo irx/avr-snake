@@ -48,8 +48,6 @@
 .set DIGITS,	0x0000
 .set SNAKE,	0x0620
 .set RAMEND,	0x08FF
-;DIGITS:	.byte 3
-;SNAKE:	.byte 32
 
 .text
 gomsg:	.ascii "GameOver"
@@ -134,74 +132,6 @@ live:	mov r16, dispmt
 	mov r16, points
 	call print
 	rjmp live
-
-	/*
-	ldi r16, 0x10
-	ldi r17, snake_len
-	call move
-	inc points
-	ldi r16, snake_len
-	call render
-	mov r16, points
-	call print
-	ldi r16, 0x01
-	ldi r17, snake_len
-	call move
-	ldi r16, snake_len
-	call render
-	ldi r16, 0x01
-	ldi r17, snake_len
-	call move
-	inc points
-	ldi r16, snake_len
-	call render
-	ldi r16, 0x01
-	ldi r17, snake_len
-	call move
-	ldi r16, snake_len
-	call render
-	inc points
-	ldi r16, 0x01
-	ldi r17, snake_len
-	call move
-	ldi r16, snake_len
-	call render
-	ldi r16, 0xf0
-	ldi r17, snake_len
-	call move
-	ldi r16, snake_len
-	call render
-	ldi r16, 0xf0
-	ldi r17, snake_len
-	call move
-	ldi r16, snake_len
-	call render
-	inc points
-	ldi r16, 0xff
-	ldi r17, snake_len
-	call move
-	ldi r16, snake_len
-	*/
-	call render
-	ldi r16, 1
-	mov r16, points
-	call print
-	ldi r16, 0xff
-stop2:	call poll
-	push r16
-	mov r17, snake_len
-	call move
-	call eat
-	mov r16, snake_len
-	call render
-	mov r16, points
-	call print
-	call collision
-	pop r16
-	rjmp stop2
-stop:	sbic DPAD, D_LEFT
-	rjmp main
-	rjmp stop
 
 
 ; displace snake position by r16
@@ -317,19 +247,18 @@ randiv:	lsr r1
 
 ; render snake and food glyph to LCD RAM
 ; input:
-;   uint8 snake_len (r16)
+;   uint8 snake_len
 
 render:
 	push r16
 	push r17
 	push r18
 	push r19
-	push r20
+	push snake_len
 	push r21
 	push r22
 	push r28
 	push r29
-	;mov snake_len, r16
 	inc snake_len
 	cbi PORTA, RS
 	ldi r16, 0x40
@@ -355,7 +284,7 @@ rcont:	dec r22
 	pop r28
 	pop r22
 	pop r21
-	pop r20
+	pop snake_len
 	pop r19
 	pop r18
 	pop r17
@@ -403,17 +332,11 @@ prdig:	ld r16, Y+
 	dec r17
 	brne prdig
 
-	; DEBUG
-	;mov r16, r24
-	;subi r16, 0xd0
-	;call send
-	;mov r16, r25
-	;subi r16, 0xd0
-	;call send
+	; { ignore BCD stuff for now
 	mov r16, r18
 	subi r16, 0xd0
 	call send
-	; ENDEBUG
+	; }
 
 	ldi r16, 0x00
 	call send
@@ -566,9 +489,6 @@ collision:
 	push r29
 	ldi r28, lo8(SNAKE)
 	ldi r29, hi8(SNAKE)
-	;ldi r16, 0x00
-	;subi r28, 0xff
-	;sbc r29, r16
 	ld r16, Y+	; first smgt is food
 	ld r16, Y
 	andi r16, 0x0f
@@ -634,4 +554,4 @@ gowr:	lpm r16, Z+
 	call send
 	dec r17
 	brne gowr
-	jmp stop
+stop:	rjmp stop
